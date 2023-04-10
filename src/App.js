@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import Form from "./Form";
+import Table from "./Table";
 
-function App() {
+const App = () => {
+  const [records, setRecords] = useState([]);
+
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem("records"));
+    if (storedData) {
+      setRecords(storedData);
+    }
+  }, []);
+
+  const handleCreateRecord = (newRecord) => {
+    const updatedRecords = [
+      ...records,
+      { ...newRecord, id: records.length + 1 },
+    ];
+    localStorage.setItem("records", JSON.stringify(updatedRecords));
+    setRecords(updatedRecords);
+  };
+
+  const validRecords = records.filter((record) => record.valid);
+  const rangeRecords = records.filter(
+    (record) => record.range > 29 && record.range < 61
+  );
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Form</h1>
+      <Form onSubmit={handleCreateRecord} />
+      <h1>Valid Records</h1>
+      <Table data={validRecords} />
+      <h1>Range Records</h1>
+      <Table data={rangeRecords} />
     </div>
   );
-}
+};
 
 export default App;
